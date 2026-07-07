@@ -1,0 +1,30 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.python-version
+
+# Git
+.git
+
+# Docker / compose
+docker-compose.yml
+Dockerfile
+
+# Local editor and system files
+.vscode/
+.DS_Store
+
+# Logs and build artifacts
+*.log
+logs/
+
+# Tests and docs not needed in container
+tests/
+README.md
+LEARNING_PLAN.md

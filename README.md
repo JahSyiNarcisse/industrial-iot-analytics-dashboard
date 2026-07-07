@@ -15,18 +15,55 @@ Industrial IoT (IIoT) Analytics Dashboard for AWS Cloud Engineering, DevOps, and
 - Project scaffold created
 - FastAPI backend skeleton available with health, CPU, memory, disk, system, network, machine, and sensor endpoints
 - Local regression tests are included and passing
+- Docker container build and GitHub Actions workflow scaffold created
 
-## Next Steps
-1. `cd ~/ucf-cwep-iot-dashboard`
+## Local Development
+1. `cd /Users/syi/industrial-iot-analytics-dashboard`
 2. `python3 -m venv .venv`
 3. `source .venv/bin/activate`
 4. `pip install -r requirements.txt`
 5. `uvicorn src.app.main:app --reload --host 0.0.0.0 --port 8000`
-6. Visit `http://localhost:8000`
+6. Open `http://localhost:8000`
+
+## Docker
+Build and run the container locally:
+
+```bash
+cd /Users/syi/industrial-iot-analytics-dashboard
+docker compose build --no-cache
+docker compose up -d
+curl -sS http://127.0.0.1:8000/health
+```
+
+If you want to stop the service:
+
+```bash
+docker compose down
+```
+
+## Container Registry
+This project is configured to publish images to GitHub Container Registry (GHCR) in CI.
+
+Image tags produced by CI:
+- `ghcr.io/<org-or-username>/industrial-iot-analytics-dashboard:<commit-sha>`
+- `ghcr.io/<org-or-username>/industrial-iot-analytics-dashboard:latest`
+
+## GitHub Actions
+A workflow is included at `.github/workflows/docker-build-push.yml`.
+
+What it does:
+- builds the Docker image using `Dockerfile`
+- scans the image with Trivy for high/critical vulnerabilities
+- pushes the image to GHCR
 
 ## Project Structure
 - `README.md` — project overview and next steps
 - `.gitignore` — ignored files for Python and Terraform
+- `.dockerignore` — ignored files during Docker build
+- `Dockerfile` — container build definition
+- `docker-compose.yml` — local compose development config
+- `.github/workflows/docker-build-push.yml` — CI workflow for build/scan/push
 - `requirements.txt` — Python dependencies
 - `src/app/main.py` — FastAPI application entry point
 - `src/app/routes.py` — API endpoints for telemetry and dashboard data
+- `tests/test_routes.py` — unit tests for route functions
