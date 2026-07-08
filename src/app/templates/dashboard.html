@@ -42,119 +42,119 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-+    <script>
-+      const endpoints = [
-+        { path: '/health', title: 'Health' },
-+        { path: '/cpu', title: 'CPU' },
-+        { path: '/memory', title: 'Memory' },
-+        { path: '/disk', title: 'Disk' },
-+        { path: '/environment', title: 'Environment' },
-+        { path: '/system', title: 'System' },
-+        { path: '/network', title: 'Network' },
-+        { path: '/machines', title: 'Machines' },
-+        { path: '/sensors', title: 'Sensors' },
-+      ];
-+
-+      function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e }
-+
-+      function makeCard(title) {
-+        const card = el('div', 'card');
-+        const h = el('h3'); h.textContent = title; h.style.margin='0 0 8px 0';
-+        const body = el('div', 'card-body');
-+        const pre = el('pre'); pre.className = 'json-output'; pre.textContent = 'Loading...';
-+        body.appendChild(pre);
-+        card.appendChild(h);
-+        card.appendChild(body);
-+        return { card, pre, body };
-+      }
-+
-+      function renderHealth(data, pre) {
-+        pre.textContent = JSON.stringify(data, null, 2);
-+      }
-+
-+      function renderCpu(data, pre) {
-+        pre.textContent = `${data.percent.toFixed(1)}%`;
-+      }
-+
-+      function renderMemory(data, pre) {
-+        pre.textContent = `Used ${Math.round(data.used/1024/1024)} MB / ${Math.round(data.total/1024/1024)} MB (${data.percent}%)`;
-+      }
-+
-+      function renderDisk(data, pre) {
-+        pre.textContent = `Used ${Math.round(data.used/1024/1024/1024)} GB / ${Math.round(data.total/1024/1024/1024)} GB (${data.percent}%)`;
-+      }
-+
-+      function renderEnvironment(data, pre) {
-+        pre.textContent = JSON.stringify(data, null, 2);
-+      }
-+
-+      function renderSystem(data, pre) {
-+        pre.textContent = `Host ${data.hostname}\nCPU ${data.cpu_count} cores\nMemory ${Math.round(data.memory_used/1024/1024)} MB / ${Math.round(data.memory_total/1024/1024)} MB (${data.memory_percent}%)`;
-+      }
-+
-+      function renderNetwork(data, pre) {
-+        pre.textContent = `Sent ${Math.round(data.bytes_sent/1024)} KB\nRecv ${Math.round(data.bytes_received/1024)} KB`;
-+      }
-+
-+      function renderMachines(data, pre) {
-+        const html = data.map(m => `${m.machine_id}: ${m.status} • ${m.temperature_c}°C • ${m.utilization_percent}%`).join('\n');
-+        pre.textContent = html;
-+      }
-+
-+      function renderSensors(data, pre, cardBody) {
-+        const labels = data.map(item => item.sensor_name);
-+        const values = data.map(item => item.reading);
-+        pre.textContent = '';
-+        const canvas = el('canvas', 'chart-canvas');
-+        cardBody.appendChild(canvas);
-+        new Chart(canvas.getContext('2d'), {
-+          type: 'bar',
-+          data: {
-+            labels,
-+            datasets: [{
-+              label: 'Reading',
-+              data: values,
-+              backgroundColor: ['#0b5cff', '#14b8a6', '#fb7185'],
-+            }],
-+          },
-+          options: { responsive: true, plugins: { legend: { display: false } } },
-+        });
-+      }
-+
-+      async function fetchAndRender(path, pre, cardBody, title) {
-+        try {
-+          const res = await fetch(path);
-+          if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
-+          const data = await res.json();
-+          switch(title) {
-+            case 'Health': return renderHealth(data, pre);
-+            case 'CPU': return renderCpu(data, pre);
-+            case 'Memory': return renderMemory(data, pre);
-+            case 'Disk': return renderDisk(data, pre);
-+            case 'Environment': return renderEnvironment(data, pre);
-+            case 'System': return renderSystem(data, pre);
-+            case 'Network': return renderNetwork(data, pre);
-+            case 'Machines': return renderMachines(data, pre);
-+            case 'Sensors': return renderSensors(data, pre, cardBody);
-+            default: pre.textContent = JSON.stringify(data, null, 2);
-+          }
-+        } catch (err) {
-+          pre.textContent = 'Error: ' + err.message;
-+        }
-+      }
-+
-+      function build() {
-+        const container = document.getElementById('cards');
-+        container.innerHTML = '';
-+        endpoints.forEach(e => {
-+          const { card, pre, body } = makeCard(e.title);
-+          container.appendChild(card);
-+          fetchAndRender(e.path, pre, body, e.title);
-+        });
-+      }
-+
-+      document.getElementById('refresh').addEventListener('click', build);
-+      build();
-+    </script>
+    <script>
+      const endpoints = [
+        { path: '/health', title: 'Health' },
+        { path: '/cpu', title: 'CPU' },
+        { path: '/memory', title: 'Memory' },
+        { path: '/disk', title: 'Disk' },
+        { path: '/environment', title: 'Environment' },
+        { path: '/system', title: 'System' },
+        { path: '/network', title: 'Network' },
+        { path: '/machines', title: 'Machines' },
+        { path: '/sensors', title: 'Sensors' },
+      ];
+
+      function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e }
+
+      function makeCard(title) {
+        const card = el('div', 'card');
+        const h = el('h3'); h.textContent = title; h.style.margin='0 0 8px 0';
+        const body = el('div', 'card-body');
+        const pre = el('pre'); pre.className = 'json-output'; pre.textContent = 'Loading...';
+        body.appendChild(pre);
+        card.appendChild(h);
+        card.appendChild(body);
+        return { card, pre, body };
+      }
+
+      function renderHealth(data, pre) {
+        pre.textContent = JSON.stringify(data, null, 2);
+      }
+
+      function renderCpu(data, pre) {
+        pre.textContent = `${data.percent.toFixed(1)}%`;
+      }
+
+      function renderMemory(data, pre) {
+        pre.textContent = `Used ${Math.round(data.used/1024/1024)} MB / ${Math.round(data.total/1024/1024)} MB (${data.percent}%)`;
+      }
+
+      function renderDisk(data, pre) {
+        pre.textContent = `Used ${Math.round(data.used/1024/1024/1024)} GB / ${Math.round(data.total/1024/1024/1024)} GB (${data.percent}%)`;
+      }
+
+      function renderEnvironment(data, pre) {
+        pre.textContent = JSON.stringify(data, null, 2);
+      }
+
+      function renderSystem(data, pre) {
+        pre.textContent = `Host ${data.hostname}\nCPU ${data.cpu_count} cores\nMemory ${Math.round(data.memory_used/1024/1024)} MB / ${Math.round(data.memory_total/1024/1024)} MB (${data.memory_percent}%)`;
+      }
+
+      function renderNetwork(data, pre) {
+        pre.textContent = `Sent ${Math.round(data.bytes_sent/1024)} KB\nRecv ${Math.round(data.bytes_received/1024)} KB`;
+      }
+
+      function renderMachines(data, pre) {
+        const html = data.map(m => `${m.machine_id}: ${m.status} • ${m.temperature_c}°C • ${m.utilization_percent}%`).join('\n');
+        pre.textContent = html;
+      }
+
+      function renderSensors(data, pre, cardBody) {
+        const labels = data.map(item => item.sensor_name);
+        const values = data.map(item => item.reading);
+        pre.textContent = '';
+        const canvas = el('canvas', 'chart-canvas');
+        cardBody.appendChild(canvas);
+        new Chart(canvas.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{
+              label: 'Reading',
+              data: values,
+              backgroundColor: ['#0b5cff', '#14b8a6', '#fb7185'],
+            }],
+          },
+          options: { responsive: true, plugins: { legend: { display: false } } },
+        });
+      }
+
+      async function fetchAndRender(path, pre, cardBody, title) {
+        try {
+          const res = await fetch(path);
+          if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+          const data = await res.json();
+          switch(title) {
+            case 'Health': return renderHealth(data, pre);
+            case 'CPU': return renderCpu(data, pre);
+            case 'Memory': return renderMemory(data, pre);
+            case 'Disk': return renderDisk(data, pre);
+            case 'Environment': return renderEnvironment(data, pre);
+            case 'System': return renderSystem(data, pre);
+            case 'Network': return renderNetwork(data, pre);
+            case 'Machines': return renderMachines(data, pre);
+            case 'Sensors': return renderSensors(data, pre, cardBody);
+            default: pre.textContent = JSON.stringify(data, null, 2);
+          }
+        } catch (err) {
+          pre.textContent = 'Error: ' + err.message;
+        }
+      }
+
+      function build() {
+        const container = document.getElementById('cards');
+        container.innerHTML = '';
+        endpoints.forEach(e => {
+          const { card, pre, body } = makeCard(e.title);
+          container.appendChild(card);
+          fetchAndRender(e.path, pre, body, e.title);
+        });
+      }
+
+      document.getElementById('refresh').addEventListener('click', build);
+      build();
+    </script>
   </body>
 </html>
