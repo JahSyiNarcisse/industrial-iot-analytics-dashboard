@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Industrial IoT Dashboard</title>
+    <style>
+      :root{color-scheme:light;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;color:#102a43;background:#f5f7fb}
+      *{box-sizing:border-box}
+      body{margin:0;padding:24px;background:#f5f7fb}
+      .container{max-width:1160px;margin:0 auto}
+      header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+      h1{font-size:clamp(1.6rem,2vw,2.4rem);margin:0}
+      p.subtitle{margin:6px 0 0;color:#475569}
+      .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+      .card{background:#ffffff;border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 18px 40px rgba(15,23,42,0.08);padding:20px}
+      .card h3{margin:0 0 12px;font-size:1.05rem;color:#0f172a}
+      .card-body{min-height:120px}
+      .json-output{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;font-size:0.95rem;overflow-x:auto;white-space:pre-wrap;word-break:break-word;margin:0}
+      .chart-canvas{width:100% !important;height:240px !important}
+      button{display:inline-flex;align-items:center;gap:8px;background:#0f172a;color:#ffffff;border:0;padding:12px 16px;border-radius:999px;font-weight:600;cursor:pointer;transition:transform .16s ease,background .16s ease}
+      button:hover{transform:translateY(-1px);background:#1e293b}
+      .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+      .small-note{color:#64748b;font-size:.94rem;margin-top:4px}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div>
+          <h1>Industrial IoT Analytics — Dashboard</h1>
+          <p class="subtitle">Live telemetry preview for system, memory, network, machine, and sensor data.</p>
+        </div>
+        <div class="toolbar">
+          <button id="refresh">Refresh All</button>
+        </div>
+      </header>
+
+      <div class="grid" id="cards">
+        <!-- cards inserted here -->
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
++    <script>
++      const endpoints = [
++        { path: '/health', title: 'Health' },
++        { path: '/cpu', title: 'CPU' },
++        { path: '/memory', title: 'Memory' },
++        { path: '/disk', title: 'Disk' },
++        { path: '/environment', title: 'Environment' },
++        { path: '/system', title: 'System' },
++        { path: '/network', title: 'Network' },
++        { path: '/machines', title: 'Machines' },
++        { path: '/sensors', title: 'Sensors' },
++      ];
++
++      function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e }
++
++      function makeCard(title) {
++        const card = el('div', 'card');
++        const h = el('h3'); h.textContent = title; h.style.margin='0 0 8px 0';
++        const body = el('div', 'card-body');
++        const pre = el('pre'); pre.className = 'json-output'; pre.textContent = 'Loading...';
++        body.appendChild(pre);
++        card.appendChild(h);
++        card.appendChild(body);
++        return { card, pre, body };
++      }
++
++      function renderHealth(data, pre) {
++        pre.textContent = JSON.stringify(data, null, 2);
++      }
++
++      function renderCpu(data, pre) {
++        pre.textContent = `${data.percent.toFixed(1)}%`;
++      }
++
++      function renderMemory(data, pre) {
++        pre.textContent = `Used ${Math.round(data.used/1024/1024)} MB / ${Math.round(data.total/1024/1024)} MB (${data.percent}%)`;
++      }
++
++      function renderDisk(data, pre) {
++        pre.textContent = `Used ${Math.round(data.used/1024/1024/1024)} GB / ${Math.round(data.total/1024/1024/1024)} GB (${data.percent}%)`;
++      }
++
++      function renderEnvironment(data, pre) {
++        pre.textContent = JSON.stringify(data, null, 2);
++      }
++
++      function renderSystem(data, pre) {
++        pre.textContent = `Host ${data.hostname}\nCPU ${data.cpu_count} cores\nMemory ${Math.round(data.memory_used/1024/1024)} MB / ${Math.round(data.memory_total/1024/1024)} MB (${data.memory_percent}%)`;
++      }
++
++      function renderNetwork(data, pre) {
++        pre.textContent = `Sent ${Math.round(data.bytes_sent/1024)} KB\nRecv ${Math.round(data.bytes_received/1024)} KB`;
++      }
++
++      function renderMachines(data, pre) {
++        const html = data.map(m => `${m.machine_id}: ${m.status} • ${m.temperature_c}°C • ${m.utilization_percent}%`).join('\n');
++        pre.textContent = html;
++      }
++
++      function renderSensors(data, pre, cardBody) {
++        const labels = data.map(item => item.sensor_name);
++        const values = data.map(item => item.reading);
++        pre.textContent = '';
++        const canvas = el('canvas', 'chart-canvas');
++        cardBody.appendChild(canvas);
++        new Chart(canvas.getContext('2d'), {
++          type: 'bar',
++          data: {
++            labels,
++            datasets: [{
++              label: 'Reading',
++              data: values,
++              backgroundColor: ['#0b5cff', '#14b8a6', '#fb7185'],
++            }],
++          },
++          options: { responsive: true, plugins: { legend: { display: false } } },
++        });
++      }
++
++      async function fetchAndRender(path, pre, cardBody, title) {
++        try {
++          const res = await fetch(path);
++          if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
++          const data = await res.json();
++          switch(title) {
++            case 'Health': return renderHealth(data, pre);
++            case 'CPU': return renderCpu(data, pre);
++            case 'Memory': return renderMemory(data, pre);
++            case 'Disk': return renderDisk(data, pre);
++            case 'Environment': return renderEnvironment(data, pre);
++            case 'System': return renderSystem(data, pre);
++            case 'Network': return renderNetwork(data, pre);
++            case 'Machines': return renderMachines(data, pre);
++            case 'Sensors': return renderSensors(data, pre, cardBody);
++            default: pre.textContent = JSON.stringify(data, null, 2);
++          }
++        } catch (err) {
++          pre.textContent = 'Error: ' + err.message;
++        }
++      }
++
++      function build() {
++        const container = document.getElementById('cards');
++        container.innerHTML = '';
++        endpoints.forEach(e => {
++          const { card, pre, body } = makeCard(e.title);
++          container.appendChild(card);
++          fetchAndRender(e.path, pre, body, e.title);
++        });
++      }
++
++      document.getElementById('refresh').addEventListener('click', build);
++      build();
++    </script>
+  </body>
+</html>

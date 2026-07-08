@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from pathlib import Path
 from .routes import router
 
 app = FastAPI(
@@ -14,6 +16,7 @@ def root():
     return {
         "message": "Industrial IoT Analytics Dashboard API",
         "endpoints": [
+            "/dashboard",
             "/health",
             "/cpu",
             "/memory",
@@ -25,3 +28,11 @@ def root():
             "/sensors",
         ],
     }
+
+
+@app.get("/dashboard", include_in_schema=False)
+def dashboard():
+    tpl_path = Path(__file__).parent / "templates" / "dashboard.html"
+    if tpl_path.exists():
+        return HTMLResponse(tpl_path.read_text(encoding='utf-8'))
+    return HTMLResponse("<html><body><h1>Dashboard template not found</h1></body></html>")
