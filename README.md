@@ -13,8 +13,10 @@ Industrial IoT (IIoT) Analytics Dashboard for AWS Cloud Engineering, DevOps, and
 
 ## Current Status
 - Project scaffold created
-- FastAPI backend skeleton available with health, CPU, memory, disk, system, network, machine, and sensor endpoints
-- Local regression tests are included and passing
+- FastAPI backend available with health, CPU, memory, disk, system, network, machine, and sensor endpoints
+- Dark dashboard UI added at `/dashboard` with charts, cards, and live telemetry previews
+- AWS deployment scaffolded with Terraform, ECS Fargate, ECR, and CloudWatch logging
+- Local regression tests are included and passing with `python3 -m unittest discover -s tests -v`
 - Docker container build and GitHub Actions workflow scaffold created
 
 ## Local Development

@@ -5,36 +5,44 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Industrial IoT Dashboard</title>
     <style>
-      :root{color-scheme:light;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;color:#102a43;background:#f5f7fb}
+      :root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e2e8f0;background:#070b1d}
       *{box-sizing:border-box}
-      body{margin:0;padding:24px;background:#f5f7fb}
-      .container{max-width:1160px;margin:0 auto}
-      header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
-      h1{font-size:clamp(1.6rem,2vw,2.4rem);margin:0}
-      p.subtitle{margin:6px 0 0;color:#475569}
-      .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-      .card{background:#ffffff;border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 18px 40px rgba(15,23,42,0.08);padding:20px}
-      .card h3{margin:0 0 12px;font-size:1.05rem;color:#0f172a}
+      body{margin:0;padding:24px;background:#070b1d;color:#e2e8f0}
+      .container{max-width:1180px;margin:0 auto}
+      header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}
+      .brand{display:flex;align-items:center;gap:12px}
+      .brand-icon{width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#0ea5e9);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem}
+      h1{font-size:clamp(1.8rem,2.6vw,2.6rem);margin:0}
+      p.subtitle{margin:6px 0 0;color:#94a3b8;font-size:0.98rem;max-width:720px;line-height:1.6}
+      .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+      .card{background:rgba(15,23,42,0.92);border:1px solid rgba(148,163,184,0.12);border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,0.18);padding:22px;position:relative;overflow:hidden}
+      .card h3{margin:0 0 14px;font-size:1.05rem;color:#e2e8f0}
       .card-body{min-height:120px}
-      .json-output{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;font-size:0.95rem;overflow-x:auto;white-space:pre-wrap;word-break:break-word;margin:0}
-      .chart-canvas{width:100% !important;height:240px !important}
-      button{display:inline-flex;align-items:center;gap:8px;background:#0f172a;color:#ffffff;border:0;padding:12px 16px;border-radius:999px;font-weight:600;cursor:pointer;transition:transform .16s ease,background .16s ease}
-      button:hover{transform:translateY(-1px);background:#1e293b}
+      .json-output{background:rgba(15,23,42,0.9);border:1px solid rgba(148,163,184,0.16);border-radius:14px;padding:16px;font-size:0.95rem;overflow-x:auto;white-space:pre-wrap;word-break:break-word;margin:0;color:#cbd5e1}
+      .chart-canvas{width:100% !important;height:280px !important}
+      button{display:inline-flex;align-items:center;gap:8px;background:#0f172a;color:#f8fafc;border:1px solid rgba(255,255,255,0.08);padding:12px 18px;border-radius:999px;font-weight:600;cursor:pointer;transition:transform .16s ease,background .16s ease, border-color .16s ease}
+      button:hover{transform:translateY(-1px);background:#14213d;border-color:#7c3aed}
       .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-      .small-note{color:#64748b;font-size:.94rem;margin-top:4px}
+      .header-pill{padding:8px 14px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid rgba(148,163,184,0.14);color:#94a3b8;font-size:0.92rem}
+      .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px;padding:20px 24px;border-radius:28px;background:linear-gradient(180deg,rgba(15,23,42,0.95),rgba(15,23,42,0.8));border:1px solid rgba(148,163,184,0.1)}
+      .small-note{color:#94a3b8;font-size:.94rem;margin-top:4px}
     </style>
   </head>
   <body>
     <div class="container">
-      <header>
-        <div>
-          <h1>Industrial IoT Analytics — Dashboard</h1>
-          <p class="subtitle">Live telemetry preview for system, memory, network, machine, and sensor data.</p>
+      <section class="topbar">
+        <div class="brand">
+          <span class="brand-icon">II</span>
+          <div>
+            <h1>Industrial IoT Analytics — Dashboard</h1>
+            <p class="subtitle">Live telemetry preview for system, memory, network, machine, and sensor data.</p>
+          </div>
         </div>
         <div class="toolbar">
+          <span class="header-pill">Last updated: just now</span>
           <button id="refresh">Refresh All</button>
         </div>
-      </header>
+      </section>
 
       <div class="grid" id="cards">
         <!-- cards inserted here -->
