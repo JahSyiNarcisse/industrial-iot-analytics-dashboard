@@ -1,5 +1,7 @@
 # Industrial IoT Analytics Dashboard
 
+![Build, Scan, and Push Docker Image](https://github.com/JahSyiNarcisse/industrial-iot-analytics-dashboard/actions/workflows/docker-build-push.yml/badge.svg)
+
 ## Project
 Industrial IoT (IIoT) Analytics Dashboard for AWS Cloud Engineering, DevOps, and Infrastructure as Code.
 
@@ -17,7 +19,7 @@ Industrial IoT (IIoT) Analytics Dashboard for AWS Cloud Engineering, DevOps, and
 - Dark dashboard UI added at `/dashboard` with charts, cards, and live telemetry previews
 - AWS deployment scaffolded with Terraform, ECS Fargate, ECR, and CloudWatch logging
 - Local regression tests are included and passing with `python3 -m unittest discover -s tests -v`
-- Docker container build and GitHub Actions workflow scaffold created
+- CI builds the Docker image, scans it with Trivy, and publishes it to GHCR on every push to `master`
 
 ## Local Development
 1. `cd /Users/syi/industrial-iot-analytics-dashboard`
@@ -44,11 +46,9 @@ docker compose down
 ```
 
 ## Container Registry
-This project is configured to publish images to GitHub Container Registry (GHCR) in CI.
-
-Image tags produced by CI:
-- `ghcr.io/<org-or-username>/industrial-iot-analytics-dashboard:<commit-sha>`
-- `ghcr.io/<org-or-username>/industrial-iot-analytics-dashboard:latest`
+CI publishes images to GitHub Container Registry (GHCR) on every push to `master`:
+- `ghcr.io/jahsyinarcisse/industrial-iot-analytics-dashboard:<commit-sha>`
+- `ghcr.io/jahsyinarcisse/industrial-iot-analytics-dashboard:latest`
 
 ## GitHub Actions
 A workflow is included at `.github/workflows/docker-build-push.yml`.
