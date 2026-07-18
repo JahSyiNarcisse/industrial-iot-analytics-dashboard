@@ -18,6 +18,7 @@ venv/
 *.tfstate.backup
 terraform.tfvars
 *.tfplan
+tfplan
 crash.log
 
 # Mac
