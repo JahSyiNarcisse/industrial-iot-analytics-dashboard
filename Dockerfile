@@ -21,6 +21,10 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY --from=builder /app/src ./src/
 
+# pip/setuptools/wheel are build-time only; drop them so a stale vendored
+# dependency inside the base image's setuptools doesn't fail vulnerability scans.
+RUN pip uninstall -y pip setuptools wheel
+
 # Create a non-root user and use it for runtime.
 RUN useradd --create-home appuser && chown -R appuser /app
 USER appuser
